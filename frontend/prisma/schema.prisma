@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  CLOSED
+}
+
+enum LeadGoal {
+  FAT_LOSS
+  MUSCLE_GAIN
+  PCOS_MANAGEMENT
+  DIABETES_MANAGEMENT
+  LIFESTYLE_COACHING
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  fullName    String
+  email       String
+  phone       String
+  goal        LeadGoal
+  programSlug String?
+  notes       String?
+  status      LeadStatus @default(NEW)
+  source      String     @default("website")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String
+  subject   String
+  message   String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model HealthProbe {
+  id        String   @id @default(cuid())
+  note      String
+  createdAt DateTime @default(now())
+}
