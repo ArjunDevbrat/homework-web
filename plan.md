@@ -1,12 +1,20 @@
 # plan.md — HOMEWORK Platform (Coach Samrat Aryan)
 
 ## 1) Objectives
-- Convert `/app/frontend` into a **Next.js 15 (App Router) + React 19 + TypeScript** app runnable via supervisor on **0.0.0.0:3000**.
-- Establish **Phase 1 foundation**: feature-based structure, global layout, Tailwind 3 design tokens (exact palette), reusable Header/Footer.
-- Prove core risks early via POC:
-  - Next dev server boots and is reachable from preview URL.
-  - Prisma connects to **local Postgres (DB: homework)** and can migrate + read/write.
-  - Determine whether **Next Route Handlers under `/api/*` are shadowed** by the existing FastAPI ingress; decide final API namespace.
+- Deliver a **production-grade Next.js 15 (App Router) + React 19 + TypeScript** application in `/app/frontend`, runnable under supervisor on **0.0.0.0:3000**.
+- Establish Phase 1–2 foundations:
+  - **Feature-based architecture** (UI, domain, data access separated).
+  - **Tailwind 3 design system** with the exact palette and constraints (light-only backgrounds; cyan reserved for CTAs/active/icons/badges).
+  - **Global layout shell** (sticky header + footer, SEO metadata, JSON-LD, sitemap/robots).
+  - **Lead capture** via **Server Actions** + **Route Handlers** with Zod validation and Prisma/Postgres persistence.
+- Ensure preview-environment reliability:
+  - Confirm `/api/*` routing works even when ingress forwards `/api/*` to a separate backend.
+  - Ensure Server Actions work behind the preview proxy without origin mismatch failures.
+  - Keep local Postgres stable across pod restarts (self-healing start script + bootstrap script).
+
+**Current status:** Phase 1 POC and Phase 2 main build are complete. Remaining work is to re-run the testing agent to confirm all fixes and close out Phase 2.
+
+---
 
 ## 2) Implementation Steps
 
@@ -18,31 +26,22 @@
 4. As a developer, I can insert and read back a record using Prisma to confirm DB connectivity.
 5. As a developer, I can call a route endpoint and confirm whether `/api/*` is reachable from Next or intercepted by FastAPI.
 
-**Steps**
-1. **Websearch / best-practice check (short):** confirm Next.js 15 + React 19 + Tailwind 3 setup patterns and Prisma on App Router (migrate dev + generate).
-2. **Replace CRA in `/app/frontend` with Next.js 15 app skeleton**
-   - Update `package.json` to use **npm-installed deps** but keep supervisor compatibility:
-     - Keep `yarn start` working by setting `"start": "next dev -H 0.0.0.0 -p 3000"`.
-   - Add `next`, `react`, `react-dom`, `typescript`, `@types/*`, `eslint` (Next), `tailwindcss@3`, `postcss`, `autoprefixer`, `framer-motion`.
-3. **Boot test**
-   - Verify `supervisorctl status frontend` and load preview URL.
-   - Ensure no hydration errors and no runtime exceptions.
-4. **Prisma + Postgres POC**
-   - Add `.env` with `DATABASE_URL=postgresql://postgres@127.0.0.1:5432/homework`.
-   - Create minimal `prisma/schema.prisma` with one model (e.g., `Probe` with `id`, `createdAt`, `note`).
-   - Run `prisma generate` + `prisma migrate dev`.
-   - Add a Node script (or `tsx` script) that creates and reads a `Probe` row; assert results.
-5. **Ingress routing POC for Route Handlers**
-   - Create a Next Route Handler at `/api/ping` returning JSON.
-   - Call `GET https://<preview>/api/ping` and inspect response.
-   - Decision:
-     - If intercepted by FastAPI: move Next endpoints to `/next-api/*` and scaffold `app/next-api/...`.
-     - If not intercepted: keep `/api/*` for Next route handlers.
+**Steps (completed)**
+1. Replace CRA in `/app/frontend` with Next.js 15 app scaffold; run using npm-installed dependencies; supervisor runs via `yarn start` → `next dev`.
+2. Set local Postgres connectivity via `.env` and confirm Prisma generates/migrates.
+3. Create and run `/app/frontend/scripts/test-core.ts` to verify:
+   - Prisma CRUD round-trip
+   - Zod pipeline
+   - local + public reachability
+   - Route handler reachability
+4. Determine ingress routing behavior:
+   - Found that preview ingress routes `/api/*` to FastAPI (shadowing Next).
+   - Resolved by converting `/app/backend/server.py` into a transparent reverse proxy forwarding `/api/*` to Next.js.
 
-**Exit gate (must pass)**
+**Exit gate (passed)**
 - Next dev reachable publicly.
-- Prisma migrate + CRUD probe succeeds.
-- Clear decision on API namespace (`/api` vs `/next-api`).
+- Prisma migrate + CRUD succeeds.
+- API namespace decision: **Keep Next Route Handlers at `/api/*`** and proxy `/api/*` to Next in preview.
 
 ---
 
@@ -52,62 +51,99 @@
 2. As a visitor, I can click every nav link and land on a page with correct title/description metadata.
 3. As a visitor, I can quickly find a “Book Free Consultation” CTA that is visually consistent across the site.
 4. As a visitor, I can scroll to a trustworthy Footer with policy links and Coach Samrat’s socials.
-5. As a visitor, the site feels “healthcare clean” (light background, subtle borders, cyan only for CTAs) and loads fast.
+5. As a visitor, I can submit a consultation request and a general message; submissions persist to Postgres.
+6. As a visitor, the site feels “healthcare clean” (light background, subtle borders, cyan only for CTAs) and loads fast.
 
-**Steps**
+**Steps (completed)**
 1. **Folder structure (feature-based)**
-   - Create required directories:
-     - `app/(routes)/about-coach`, `programs`, `free-resources`, `transformations`, `contact`
-     - Route handlers per POC decision: `app/api/lead`, `app/api/contact` or `app/next-api/...`
-     - `components/ui`, `components/home`, `components/about`, `components/programs`, `components/testimonials`, `components/resources`, `components/contact`, `components/layout`
-     - `lib/prisma.ts`, `lib/data.ts`, `lib/utils.ts`, `lib/actions.ts`, `types/`, `public/images`, `public/icons`
+   - Implemented:
+     - `app/(routes)/{about-coach,programs,free-resources,transformations,contact,privacy-policy,terms,refund-policy}`
+     - `app/api/{lead,contact}`
+     - `components/{ui,layout,home,about,programs,resources,testimonials,contact}`
+     - `lib/{prisma,data,utils,validations,actions,metadata,repositories,services}`
+     - `types/`, `prisma/schema.prisma`, `public/{images,icons}`
+
 2. **Design system (Tailwind 3 + CSS variables)**
-   - Configure `tailwind.config.js` and `globals.css` with exact tokens:
+   - Tailwind tokens + CSS variables configured with the exact palette:
      - Text `#1F2D3D`, Accent `#22B8CF`, BG `#F8FCFD`, Surface `#FFFFFF`, Border `#E6F2F5`, Hover `#179DB3`.
-   - Enforce constraints: no dark backgrounds; accent reserved for CTA/active/icon badges.
+   - Enforced constraints: light-only backgrounds; cyan reserved for CTAs/active/icons/badges.
+
 3. **Global layout**
-   - Implement `app/layout.tsx` (Server Component), font setup, metadata defaults.
-   - Add `components/layout/Header.tsx` (sticky nav, mobile menu if needed as client component only).
-   - Add `components/layout/Footer.tsx` with:
-     - Privacy/Terms/Refund links (routes or external placeholders if not yet implemented)
-     - Social links: Instagram `@homework_samrat`, YouTube `@samrataryan`
-     - Contact: `contact@homework.fit`
-4. **Pages + metadata (clickable placeholders)**
-   - Implement each route page with its own `export const metadata` and a simple hero section component:
-     - `/about-coach`, `/programs`, `/free-resources`, `/transformations`, `/contact`
-   - Ensure each page is built from reusable section components (no monolithic page files).
-5. **API stubs (env-gated)**
-   - Create route handlers for lead/contact that validate payload with Zod and return safe responses.
-   - Keep Resend/UploadThing wiring **disabled by default** unless env keys exist.
-6. **Testing checkpoint**
-   - Run `npm run lint` + `npm run typecheck` (add scripts) and fix all warnings/errors.
-   - Manual UX pass: responsive header/footer, accessible nav, focus states, SEO metadata.
+   - Implemented `app/layout.tsx` with:
+     - `next/font` (Bricolage Grotesque + Instrument Sans)
+     - SEO defaults + JSON-LD
+     - skip-to-content accessibility link
+     - Sticky header + footer
+   - Header: logo, desktop nav with active underline, CTA, Radix Dialog mobile menu.
+   - Footer: legal links, email, socials, credentials and medical disclaimer.
+
+4. **Pages + metadata (clickable, real content placeholders)**
+   - Implemented 9 routes, each with its own metadata:
+     - `/`, `/about-coach`, `/programs`, `/free-resources`, `/transformations`, `/contact`, `/privacy-policy`, `/terms`, `/refund-policy`.
+   - Added `sitemap.ts`, `robots.ts`, `not-found.tsx`, `error.tsx`.
+
+5. **Lead/Contact submission (Server Actions + Route Handlers)**
+   - Server Actions:
+     - `submitLeadAction`, `submitContactAction` (Zod re-validated server-side).
+   - Route Handlers:
+     - `POST /api/lead`, `POST /api/contact` (Zod validated, Prisma persistence).
+   - Resend transport is **env-gated** (email delivery optional; returns `emailDelivered:false` when unconfigured).
+
+6. **Quality gates (green)**
+   - `tsc --noEmit` clean
+   - `next lint --max-warnings=0` clean
+   - `npm run build` succeeds
+   - `/app/frontend/scripts/test-core.ts` passes 6/6.
+
+**Testing iteration 1 (result + fixes)**
+- All backend API tests passed; UI/nav/SEO/a11y/design passed.
+- **Critical issue found:** Server Actions blocked in preview due to Next.js origin check mismatch (`x-forwarded-host` vs `origin`).
+- **Fix applied:** configured `experimental.serverActions.allowedOrigins` in `next.config.mjs`, driven by:
+  - `NEXT_PUBLIC_SITE_URL`
+  - `ADDITIONAL_ALLOWED_ORIGINS`
+- **Additional reliability fix:** Postgres supervisor process became unavailable after a pod restart.
+  - Updated `/app/scripts/start_postgres.sh` to be self-healing (ensure postgres user exists, ensure binaries installed, clear stale `postmaster.pid`).
+  - Added `/app/scripts/bootstrap_env.sh` to re-register the supervisor `postgres` program (since `/etc/supervisor/conf.d` is not persistent) and redeploy migrations.
+- **Manual browser verification:** lead and contact forms submit successfully via Server Actions; forms reset; `/contact?program=strength-recomp` prefill works.
+
+**Exit gate (remaining)**
+- Re-run testing agent to confirm Server Actions fix in the preview environment and close out Phase 2.
 
 ---
 
-### Phase 3 — Add more features (post-Phase-1 backlog; only after Phase 2 is stable)
+### Phase 3 — Add more features (post-Phase-2 backlog; only after Phase 2 is stable)
 **User stories**
-1. As a visitor, I can submit a consultation request and receive a confirmation message.
-2. As a visitor, I can upload transformation images/resources when enabled.
-3. As an admin/coach, I can view captured leads in the database.
-4. As a visitor, I can browse structured programs/resources with clear pricing and inclusions.
-5. As a visitor, I can trust the site because policies and contact flows work end-to-end.
+1. As a visitor, I can upload transformation photos/resources when enabled.
+2. As a visitor, I receive transactional emails when Resend is configured.
+3. As an admin/coach, I can view leads/contact messages in a basic admin view.
+4. As a visitor, I can browse richer program details and transformation case studies.
+5. As a developer, I can deploy to Vercel using Neon Postgres (`DATABASE_URL` swap) with zero code changes.
 
-**Steps**
-- Implement DB models for leads/contact submissions.
-- Enable Resend integration (env-gated) and send transactional emails.
-- Enable UploadThing (env-gated) for uploads.
-- Add content-rich sections and program cards, transformations gallery, resources list.
-- Add basic admin view (no auth yet) behind a simple env-guarded route for internal review.
-- End-to-end testing + regressions.
+**Steps (future backlog)**
+- Enable Resend end-to-end (env keys + verified sender), add coach notification templates.
+- Enable UploadThing (env-gated) for transformation uploads.
+- Add admin leads/messages view (env-guarded; add auth later).
+- Add per-program detail pages and richer transformation pages (case study templates).
+- Swap `DATABASE_URL` to Neon for Vercel deployment.
+- Expand automated testing (Playwright/Cypress) and add regression suite.
+
+---
 
 ## 3) Next Actions
-1. Run Phase 1 POC: replace CRA with Next, boot under supervisor, verify preview URL.
-2. Add Prisma minimal schema + migrate + probe CRUD script.
-3. Test route handler reachability and lock API namespace decision.
-4. Implement Phase 2 scaffold: tokens, layout, header/footer, route pages with metadata.
+1. **Re-run Testing Agent** to confirm Server Actions now work through the preview ingress.
+2. Ensure Postgres resilience:
+   - If a pod restart occurs and Postgres supervisor program disappears, run `sh /app/scripts/bootstrap_env.sh`.
+3. Once testing is green, tag Phase 2 as complete and proceed only with Phase 3 items as needed.
+
+---
 
 ## 4) Success Criteria
-- **POC:** Next app loads from preview URL; Prisma migrate + CRUD works against local Postgres; confirmed API routing strategy.
-- **Phase 1 deliverable:** exact color palette via Tailwind tokens/CSS vars; feature-based folders exist; global layout + sticky header/footer; all route pages clickable with page-specific metadata.
-- **Quality:** zero TypeScript errors, zero ESLint warnings, no hydration mismatch, mobile-first responsive, accessible navigation and focus states.
+- **Phase 1:** Next app loads from preview URL; Prisma migrates and performs CRUD; `/api/*` Route Handlers reachable despite preview ingress.
+- **Phase 2:**
+  - Exact palette + constraints enforced.
+  - Feature-based structure implemented.
+  - Sticky header/footer, accessible mobile nav, SEO metadata per page.
+  - Lead + contact flows persist data via Prisma/Postgres.
+  - `tsc`, `eslint`, and `build` all pass.
+  - Testing agent confirms no Server Action failures.
+- **Quality:** zero TypeScript errors, zero ESLint warnings, no hydration mismatches, mobile-first responsive, accessibility-compliant focus states.
