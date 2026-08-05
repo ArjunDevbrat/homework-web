@@ -32,8 +32,8 @@ const config: Config = {
         display: ['var(--font-display)', 'var(--font-sans)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        'display-xl': ['clamp(2.5rem, 6vw, 4.25rem)', { lineHeight: '1.05', letterSpacing: '-0.03em' }],
-        'display-lg': ['clamp(2rem, 4.5vw, 3.25rem)', { lineHeight: '1.1', letterSpacing: '-0.025em' }],
+        'display-xl': ['clamp(2.4rem, 4.6vw, 3.6rem)', { lineHeight: '1.08', letterSpacing: '-0.03em' }],
+        'display-lg': ['clamp(1.95rem, 3.6vw, 3rem)', { lineHeight: '1.12', letterSpacing: '-0.025em' }],
         'display-md': ['clamp(1.625rem, 3vw, 2.25rem)', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
       },
       borderRadius: {
@@ -64,12 +64,23 @@ const config: Config = {
           to: { opacity: '1', transform: 'translateY(0)' },
         },
         'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' },
+          from: { height: '0', opacity: '0' },
+          to: { height: 'var(--radix-accordion-content-height)', opacity: '1' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)', opacity: '1' },
+          to: { height: '0', opacity: '0' },
+        },
+        'marquee-x': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
         },
       },
       animation: {
         'fade-up': 'fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'accordion-down': 'accordion-down 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+        'accordion-up': 'accordion-up 0.22s cubic-bezier(0.22, 1, 0.36, 1)',
+        marquee: 'marquee-x 32s linear infinite',
       },
     },
   },

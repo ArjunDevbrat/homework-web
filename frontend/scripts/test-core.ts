@@ -1,11 +1,11 @@
 /**
- * POC core verification script.
+ * Core verification script for the HOMEWORK platform.
  *
- * Proves, in isolation, the three core risks for the HOMEWORK platform:
- *   1. Prisma <-> local PostgreSQL connectivity + full CRUD round trip.
- *   2. Zod validation pipeline used by lead/contact server actions.
- *   3. Next.js dev server reachability (local + public preview URL) and whether
- *      Next Route Handlers under /api/* survive the preview ingress.
+ * Proves, in isolation, the core risks:
+ *   1. Prisma <-> PostgreSQL connectivity + full CRUD round trip.
+ *   2. Zod validation pipeline shared by Server Actions and Route Handlers.
+ *   3. Next.js reachability locally AND through the preview ingress, including
+ *      whether Route Handlers under /api/* survive that ingress.
  *
  * Run: npx tsx scripts/test-core.ts
  */
@@ -16,6 +16,18 @@ const prisma = new PrismaClient();
 
 const LOCAL_URL = 'http://127.0.0.1:3000';
 const PUBLIC_URL = process.env.NEXT_PUBLIC_SITE_URL ?? '';
+
+const PAGE_PATHS = [
+  '/',
+  '/about-coach',
+  '/programs',
+  '/free-resources',
+  '/transformations',
+  '/contact',
+  '/privacy-policy',
+  '/terms',
+  '/refund-policy',
+] as const;
 
 type Result = { name: string; ok: boolean; detail: string };
 const results: Result[] = [];
@@ -28,29 +40,31 @@ function record(name: string, ok: boolean, detail: string): void {
 
 async function testPrismaCrud(): Promise<void> {
   try {
-    const created = await prisma.healthProbe.create({ data: { note: 'poc-probe' } });
-    const read = await prisma.healthProbe.findUnique({ where: { id: created.id } });
+    const probe = await prisma.healthProbe.create({ data: { note: 'core-probe' } });
+    const probeRead = await prisma.healthProbe.findUnique({ where: { id: probe.id } });
+
     const lead = await prisma.lead.create({
       data: {
-        fullName: 'POC Tester',
-        email: 'poc@homework.fit',
+        fullName: 'Core Tester',
+        email: 'core@homework.fit',
         phone: '+919999999999',
         goal: 'FAT_LOSS',
-        notes: 'poc lead',
+        notes: 'core lead',
       },
     });
     const leadRead = await prisma.lead.findUnique({ where: { id: lead.id } });
-    await prisma.lead.delete({ where: { id: lead.id } });
-    await prisma.healthProbe.delete({ where: { id: created.id } });
 
-    const ok = read?.note === 'poc-probe' && leadRead?.status === 'NEW';
+    await prisma.lead.delete({ where: { id: lead.id } });
+    await prisma.healthProbe.delete({ where: { id: probe.id } });
+
+    const ok = probeRead?.note === 'core-probe' && leadRead?.status === 'NEW';
     record('prisma-postgres-crud', ok, ok ? 'create/read/delete on Lead + HealthProbe OK' : 'round trip mismatch');
   } catch (error) {
     record('prisma-postgres-crud', false, (error as Error).message);
   }
 }
 
-async function testZodPipeline(): Promise<void> {
+function testZodPipeline(): void {
   const schema = z.object({
     fullName: z.string().min(2),
     email: z.string().email(),
@@ -69,12 +83,53 @@ async function testZodPipeline(): Promise<void> {
   record('zod-validation', good.success && !bad.success, `valid=${good.success} invalid-rejected=${!bad.success}`);
 }
 
-async function probe(url: string, label: string): Promise<void> {
+async function testPages(baseUrl: string, label: string): Promise<void> {
+  const statuses: string[] = [];
+  let allOk = true;
+
+  for (const path of PAGE_PATHS) {
+    try {
+      const response = await fetch(`${baseUrl}${path}`);
+      statuses.push(`${path}=${response.status}`);
+      if (!response.ok) {
+        allOk = false;
+      }
+    } catch (error) {
+      statuses.push(`${path}=ERR(${(error as Error).message})`);
+      allOk = false;
+    }
+  }
+
+  record(label, allOk, statuses.join(' '));
+}
+
+async function testLeadRouteHandler(baseUrl: string, label: string): Promise<void> {
   try {
-    const response = await fetch(url, { headers: { accept: 'application/json,text/html' } });
-    const text = await response.text();
-    const isJson = text.trim().startsWith('{');
-    record(label, response.ok, `status=${response.status} json=${isJson} body=${text.slice(0, 140)}`);
+    const valid = await fetch(`${baseUrl}/api/lead`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: 'Route Handler Probe',
+        email: `probe-${Date.now()}@homework.fit`,
+        phone: '+919812345678',
+        goal: 'LIFESTYLE_COACHING',
+        consent: true,
+      }),
+    });
+    const validBody = (await valid.json()) as { status?: string; id?: string };
+
+    const invalid = await fetch(`${baseUrl}/api/lead`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName: 'X', email: 'bad', phone: '1', goal: 'NOPE' }),
+    });
+
+    if (validBody.id) {
+      await prisma.lead.delete({ where: { id: validBody.id } });
+    }
+
+    const ok = valid.status === 201 && validBody.status === 'success' && invalid.status === 422;
+    record(label, ok, `created=${valid.status} rejected=${invalid.status}`);
   } catch (error) {
     record(label, false, (error as Error).message);
   }
@@ -82,19 +137,21 @@ async function probe(url: string, label: string): Promise<void> {
 
 async function main(): Promise<void> {
   await testPrismaCrud();
-  await testZodPipeline();
-  await probe(`${LOCAL_URL}/`, 'next-dev-local-page');
-  await probe(`${LOCAL_URL}/api/health`, 'next-route-handler-local');
+  testZodPipeline();
+  await testPages(LOCAL_URL, 'next-pages-local');
+  await testLeadRouteHandler(LOCAL_URL, 'lead-route-handler-local');
+
   if (PUBLIC_URL) {
-    await probe(`${PUBLIC_URL}/`, 'next-page-public-preview');
-    await probe(`${PUBLIC_URL}/api/health`, 'next-route-handler-public-preview');
+    await testPages(PUBLIC_URL, 'next-pages-public-preview');
+    await testLeadRouteHandler(PUBLIC_URL, 'lead-route-handler-public-preview');
   }
 
   await prisma.$disconnect();
 
-  const failures = results.filter((r) => !r.ok);
+  const failures = results.filter((result) => !result.ok);
   // eslint-disable-next-line no-console
   console.log(`\n=== ${results.length - failures.length}/${results.length} checks passed ===`);
+
   if (failures.length > 0) {
     process.exitCode = 1;
   }

@@ -1,15 +1,35 @@
-import type { Metadata } from 'next';
+import { CtaBand } from '@/components/layout/cta-band';
+import { FaqSection } from '@/components/home/faq-section';
+import { Hero } from '@/components/home/hero';
+import { ProgramsPreview } from '@/components/home/programs-preview';
+import { ResourcesPreview } from '@/components/home/resources-preview';
+import { SpecialtiesGrid } from '@/components/home/specialties-grid';
+import { TransformationsPreview } from '@/components/home/transformations-preview';
+import { TrustStrip } from '@/components/home/trust-strip';
+import { ProcessSteps } from '@/components/programs/process-steps';
+import { buildPageMetadata } from '@/lib/metadata';
+import { coachingProcess, homeFaqs } from '@/lib/data';
 
-export const metadata: Metadata = { title: 'POC' };
+export const metadata = buildPageMetadata({
+  title: 'Evidence-Based Nutrition & Fitness Coaching',
+  description:
+    'HOMEWORK by Coach Samrat Aryan — sustainable fat loss, muscle building, PCOS and diabetes management built around the food already cooked in your kitchen. Book a free consultation.',
+  path: '/',
+  keywords: ['online nutrition coach', 'fat loss coaching India', 'PCOS coach', 'strength coach'],
+});
 
-export default function PocPage() {
+export default function HomePage() {
   return (
-    <main className="container-content py-20">
-      <h1 className="text-display-lg font-semibold">HOMEWORK boot check</h1>
-      <p className="mt-4 text-slateink-muted">Next.js 15 + React 19 + Tailwind 3 rendering correctly.</p>
-      <button className="mt-8 rounded-full bg-accent px-6 py-3 font-semibold text-white transition-colors hover:bg-accent-hover">
-        Book Free Consultation
-      </button>
-    </main>
+    <>
+      <Hero />
+      <TrustStrip />
+      <SpecialtiesGrid />
+      <ProgramsPreview />
+      <ProcessSteps steps={coachingProcess} />
+      <TransformationsPreview />
+      <ResourcesPreview />
+      <FaqSection items={homeFaqs} testId="home-faq" />
+      <CtaBand />
+    </>
   );
 }
