@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import { ContactChannels } from '@/components/contact/contact-channels';
 import { ContactForm } from '@/components/contact/contact-form';
-import { LeadForm } from '@/components/contact/lead-form';
+import { ConsultationForm } from '@/components/contact/consultation-form';
 import { WhatHappensNext } from '@/components/contact/what-happens-next';
 import { PageHero } from '@/components/layout/page-hero';
 import { Section } from '@/components/layout/section';
@@ -13,14 +13,18 @@ export const metadata = buildPageMetadata({
   description:
     'Book a free 20-minute consultation with Coach Samrat Aryan, or send a general question about HOMEWORK coaching programs, pricing and suitability.',
   path: '/contact',
-  keywords: ['book nutrition consultation', 'free coaching consultation India', 'contact Coach Samrat Aryan'],
+  keywords: [
+    'book nutrition consultation',
+    'free coaching consultation India',
+    'contact Coach Samrat Aryan',
+  ],
 });
 
 export default function ContactPage() {
   return (
     <>
       <PageHero
-        description="Tell me your goal, your constraints and anything medical I should know. You will hear back within 48 hours with an honest assessment — including when coaching is not the right next step for you."
+        description="Tell me your goal, your profession and anything medical I should know. You will hear back within 48 hours with an honest assessment — including when coaching is not the right next step for you."
         eyebrow="Contact"
         testId="contact-hero"
         title="Book your free 20-minute consultation"
@@ -32,12 +36,12 @@ export default function ContactPage() {
             <Suspense
               fallback={
                 <div
-                  className="h-[640px] animate-pulse rounded-3xl border border-hairline bg-surface"
-                  data-testid="lead-form-skeleton"
+                  className="h-[820px] animate-pulse rounded-3xl border border-hairline bg-surface"
+                  data-testid="consultation-form-skeleton"
                 />
               }
             >
-              <LeadForm />
+              <ConsultationForm />
             </Suspense>
           </div>
 

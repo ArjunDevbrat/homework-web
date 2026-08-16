@@ -2,7 +2,7 @@ import { Instagram, Mail, Youtube } from 'lucide-react';
 import Link from 'next/link';
 
 import { Container } from '@/components/ui/container';
-import { credentials, legalNav, primaryNav, siteConfig } from '@/lib/data';
+import { coachProfile, legalNav, primaryNav, siteConfig } from '@/lib/data';
 
 const socialIcons = {
   instagram: Instagram,
@@ -20,13 +20,13 @@ export const Footer = () => (
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-slateink-muted">{siteConfig.tagline}</p>
 
           <ul className="mt-6 flex flex-wrap gap-2">
-            {credentials.map((credential) => (
+            {coachProfile.qualifications.map((qualification) => (
               <li
                 className="rounded-full border border-hairline bg-surface-muted px-3 py-1 text-xs font-semibold text-slateink"
-                key={credential.abbreviation}
-                title={credential.title}
+                key={qualification.abbreviation}
+                title={qualification.detail}
               >
-                {credential.title}
+                {qualification.title}
               </li>
             ))}
           </ul>

@@ -1,8 +1,8 @@
 import { Section } from '@/components/layout/section';
-import { TransformationCard } from '@/components/testimonials/transformation-card';
+import { TestimonialCard } from '@/components/testimonials/testimonial-card';
 import { RevealItem, RevealList } from '@/components/ui/reveal';
 import { SectionHeading } from '@/components/ui/section-heading';
-import { transformations } from '@/lib/data';
+import { testimonials } from '@/lib/data';
 
 export const TransformationsGrid = () => (
   <Section bordered={false} testId="transformations-grid">
@@ -13,9 +13,9 @@ export const TransformationsGrid = () => (
     />
 
     <RevealList className="mt-12 grid gap-5 lg:grid-cols-2">
-      {transformations.map((transformation) => (
-        <RevealItem className="h-full" key={transformation.slug}>
-          <TransformationCard transformation={transformation} />
+      {testimonials.map((testimonial) => (
+        <RevealItem className="h-full" key={testimonial.slug}>
+          <TestimonialCard testimonial={testimonial} />
         </RevealItem>
       ))}
     </RevealList>

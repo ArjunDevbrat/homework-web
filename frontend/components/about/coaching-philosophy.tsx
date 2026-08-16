@@ -2,18 +2,18 @@ import { Section } from '@/components/layout/section';
 import { getIcon } from '@/components/ui/icon-registry';
 import { RevealItem, RevealList } from '@/components/ui/reveal';
 import { SectionHeading } from '@/components/ui/section-heading';
-import { coachingPrinciples } from '@/lib/data';
+import { coachProfile } from '@/lib/data';
 
 export const CoachingPhilosophy = () => (
   <Section testId="about-philosophy">
     <SectionHeading
       eyebrow="Coaching philosophy"
-      subtitle="Three rules that decide every recommendation you will ever get from me."
+      subtitle="Four rules that decide every recommendation you will ever get from me."
       title="How I decide what to tell you"
     />
 
-    <RevealList className="mt-12 grid gap-5 md:grid-cols-3">
-      {coachingPrinciples.map((principle) => {
+    <RevealList className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {coachProfile.principles.map((principle) => {
         const Icon = getIcon(principle.icon);
 
         return (

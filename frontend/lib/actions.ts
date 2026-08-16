@@ -1,33 +1,48 @@
 'use server';
 
-import { contactSchema, leadSchema, toFieldErrors } from '@/lib/validations';
-import { submitContactMessage, submitLead } from '@/lib/services/lead-service';
+import { submitContactMessage, submitConsultation } from '@/lib/services/lead-service';
+import { consultationSchema, contactSchema, toFieldErrors } from '@/lib/validations';
 import type { ActionState } from '@/types';
 
-export type LeadFieldKey = 'fullName' | 'email' | 'phone' | 'goal' | 'programSlug' | 'notes' | 'consent';
+export type ConsultationFieldKey =
+  | 'fullName'
+  | 'phone'
+  | 'age'
+  | 'gender'
+  | 'goal'
+  | 'healthIssue'
+  | 'profession'
+  | 'email'
+  | 'programSlug'
+  | 'consent';
+
 export type ContactFieldKey = 'fullName' | 'email' | 'subject' | 'message';
 
 /**
  * Server Action backing the consultation form on /contact.
  * Validation is re-run on the server so client-side Zod can never be bypassed.
  */
-export async function submitLeadAction(values: unknown): Promise<ActionState<LeadFieldKey>> {
-  const parsed = leadSchema.safeParse(values);
+export async function submitConsultationAction(
+  values: unknown,
+): Promise<ActionState<ConsultationFieldKey>> {
+  const parsed = consultationSchema.safeParse(values);
 
   if (!parsed.success) {
     return {
       status: 'error',
       message: 'Please fix the highlighted fields and try again.',
-      fieldErrors: toFieldErrors(parsed.error) as Partial<Record<LeadFieldKey, string>>,
+      fieldErrors: toFieldErrors(parsed.error) as Partial<Record<ConsultationFieldKey, string>>,
     };
   }
 
   try {
-    await submitLead(parsed.data, 'contact-page');
+    const result = await submitConsultation(parsed.data, 'contact-page');
+
     return {
       status: 'success',
       message:
         'Request received. Coach Samrat reviews every submission personally and will reach out within 48 hours.',
+      whatsappUrl: result.whatsappUrl,
     };
   } catch {
     return {

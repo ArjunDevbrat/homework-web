@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -44,5 +46,8 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

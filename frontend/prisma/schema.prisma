@@ -10,36 +10,55 @@ datasource db {
 enum LeadStatus {
   NEW
   CONTACTED
+  CONSULTED
   CONVERTED
   CLOSED
 }
 
-enum LeadGoal {
-  FAT_LOSS
-  MUSCLE_GAIN
-  PCOS_MANAGEMENT
-  DIABETES_MANAGEMENT
-  LIFESTYLE_COACHING
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+  PREFER_NOT_TO_SAY
 }
 
-model Lead {
-  id          String     @id @default(cuid())
-  fullName    String
-  email       String
-  phone       String
-  goal        LeadGoal
-  programSlug String?
-  notes       String?
-  status      LeadStatus @default(NEW)
-  source      String     @default("website")
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+enum PrimaryGoal {
+  FAT_LOSS
+  MUSCLE_BUILDING
+  WEIGHT_GAIN
+  DIABETES_MANAGEMENT
+  PCOS_MANAGEMENT
+  THYROID_MANAGEMENT
+  LIFESTYLE_MODIFICATION
+  HEALTHY_AGING
+  POSTPARTUM_FITNESS
+}
 
-  @@index([email])
+/// A consultation request captured from the website or the public lead API.
+model Lead {
+  id           String      @id @default(cuid())
+  fullName     String
+  phone        String
+  email        String?
+  age          Int
+  gender       Gender
+  goal         PrimaryGoal
+  healthIssue  String
+  profession   String
+  programSlug  String?
+  status       LeadStatus  @default(NEW)
+  source       String      @default("website")
+  whatsappSent Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([phone])
+  @@index([status])
   @@index([createdAt])
 }
 
-model ContactMessage {
+/// A general enquiry sent through the contact form or the public contact API.
+model ContactSubmission {
   id        String   @id @default(cuid())
   fullName  String
   email     String
@@ -48,9 +67,11 @@ model ContactMessage {
   handled   Boolean  @default(false)
   createdAt DateTime @default(now())
 
+  @@index([email])
   @@index([createdAt])
 }
 
+/// Lightweight row used by scripts/test-core.ts to assert database connectivity.
 model HealthProbe {
   id        String   @id @default(cuid())
   note      String

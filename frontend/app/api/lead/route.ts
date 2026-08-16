@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import { submitLead } from '@/lib/services/lead-service';
-import { leadSchema, toFieldErrors } from '@/lib/validations';
+import { submitConsultation } from '@/lib/services/lead-service';
+import { consultationSchema, toFieldErrors } from '@/lib/validations';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: 'error', message: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const parsed = leadSchema.safeParse(payload);
+  const parsed = consultationSchema.safeParse(payload);
 
   if (!parsed.success) {
     return NextResponse.json(
@@ -25,9 +25,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await submitLead(parsed.data, 'api');
+    const result = await submitConsultation(parsed.data, 'api');
+
     return NextResponse.json(
-      { status: 'success', id: result.id, emailDelivered: result.emailDelivered },
+      {
+        status: 'success',
+        id: result.id,
+        emailDelivered: result.emailDelivered,
+        whatsappUrl: result.whatsappUrl,
+      },
       { status: 201 },
     );
   } catch {

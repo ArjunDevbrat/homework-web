@@ -81,6 +81,7 @@ npm run dev                 # http://localhost:3000
 | `DATABASE_URL` | yes | PostgreSQL connection string (swap in the Neon URL for production) |
 | `NEXT_PUBLIC_SITE_URL` | yes | Canonical site origin, used by metadata + sitemap |
 | `ADDITIONAL_ALLOWED_ORIGINS` | no | Extra hosts allowed to invoke Server Actions behind a proxy |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | no | Business WhatsApp number in international digits (e.g. `919812345678`). When empty, `generateWhatsAppLink` falls back to a number-less `wa.me` link so the visitor can pick the chat themselves |
 | `RESEND_API_KEY` | no | Enables coach notification emails |
 | `RESEND_FROM_EMAIL` | no | Verified sender address |
 | `LEAD_NOTIFICATION_EMAIL` | no | Where lead notifications are delivered |

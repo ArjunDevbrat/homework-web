@@ -14,8 +14,8 @@ export const ProgramsPreview = () => (
         </ButtonLink>
       }
       eyebrow="Coaching programs"
-      subtitle="Three tracks, one method. Pick the block that matches your goal and medical context."
-      title="Pick the track that fits your goal"
+      subtitle="Training, nutrition, or both. Pick the level of support you actually need — the Exercise Only track starts with a 3-day free trial."
+      title="Three ways to work together"
     />
 
     <RevealList className="mt-12 grid gap-5 lg:grid-cols-3">

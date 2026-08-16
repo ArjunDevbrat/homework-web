@@ -1,10 +1,10 @@
 import { Section } from '@/components/layout/section';
 import { Accordion } from '@/components/ui/accordion';
 import { SectionHeading } from '@/components/ui/section-heading';
-import type { FaqItem } from '@/types';
+import type { FAQItem } from '@/types';
 
 type FaqSectionProps = {
-  readonly items: readonly FaqItem[];
+  readonly items: readonly FAQItem[];
   readonly eyebrow?: string;
   readonly title?: string;
   readonly subtitle?: string;

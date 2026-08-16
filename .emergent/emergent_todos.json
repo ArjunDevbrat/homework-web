@@ -1,42 +1,34 @@
 [
   {
-    "content": "Phase 1 POC: Next.js 15 boot + Prisma/Postgres CRUD + /api route reachability",
+    "content": "Phase 2: Strict types in types/index.ts",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Design tokens (tailwind.config.ts + globals.css CSS variables)",
+    "content": "Phase 2: Centralized data store lib/data.ts",
     "status": "completed"
   },
   {
-    "content": "Phase 2: types/ + lib/ (prisma, utils, data, validations, repositories, email service, actions)",
+    "content": "Phase 2: Zod consultation schema + generateWhatsAppLink + image/video placeholder fallbacks",
     "status": "completed"
   },
   {
-    "content": "Phase 2: components/ui primitives",
+    "content": "Phase 2: Prisma schema (Lead + ContactSubmission + enums), migration, seed.ts, client generation",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Global layout — app/layout.tsx, sticky Header, Footer, CTA band",
+    "content": "Phase 2: Update repositories/services/actions/route handlers for new schema",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Feature section components (home, about, programs, resources, testimonials, contact)",
+    "content": "Phase 2: Rebuild Consultation form UI (7 fields + WhatsApp handoff) and update all cards/sections",
     "status": "completed"
   },
   {
-    "content": "Phase 2: All 9 route pages with own metadata + sitemap/robots/not-found/error",
+    "content": "Phase 2: Surface 16 conditions + 7-step client journey + 8 guides + 10 FAQs on the frontend",
     "status": "completed"
   },
   {
-    "content": "Phase 2: Route handlers /api/lead + /api/contact (Zod validated, env-gated Resend)",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: Zero TS errors + zero ESLint warnings + production build passes",
-    "status": "completed"
-  },
-  {
-    "content": "Phase 2: All user stories covered in development",
+    "content": "Phase 2: Zero TS errors, zero ESLint warnings, production build passes, seed runs",
     "status": "completed"
   },
   {

@@ -1,21 +1,29 @@
 import { CtaBand } from '@/components/layout/cta-band';
+import { ClientJourney } from '@/components/home/client-journey';
+import { ConditionsTreated } from '@/components/home/conditions-treated';
 import { FaqSection } from '@/components/home/faq-section';
+import { FocusAreas } from '@/components/home/focus-areas';
 import { Hero } from '@/components/home/hero';
 import { ProgramsPreview } from '@/components/home/programs-preview';
 import { ResourcesPreview } from '@/components/home/resources-preview';
-import { SpecialtiesGrid } from '@/components/home/specialties-grid';
 import { TransformationsPreview } from '@/components/home/transformations-preview';
 import { TrustStrip } from '@/components/home/trust-strip';
-import { ProcessSteps } from '@/components/programs/process-steps';
+import { WorkflowSteps } from '@/components/programs/workflow-steps';
+import { homeFaqs, workflowSteps } from '@/lib/data';
 import { buildPageMetadata } from '@/lib/metadata';
-import { coachingProcess, homeFaqs } from '@/lib/data';
 
 export const metadata = buildPageMetadata({
   title: 'Evidence-Based Nutrition & Fitness Coaching',
   description:
-    'HOMEWORK by Coach Samrat Aryan — sustainable fat loss, muscle building, PCOS and diabetes management built around the food already cooked in your kitchen. Book a free consultation.',
+    'HOMEWORK by Coach Samrat Aryan — 1500+ clients counselled. Sustainable fat loss, muscle building, PCOS, thyroid and diabetes management, coached from home around the food your family already cooks.',
   path: '/',
-  keywords: ['online nutrition coach', 'fat loss coaching India', 'PCOS coach', 'strength coach'],
+  keywords: [
+    'online nutrition coach India',
+    'fat loss coaching',
+    'PCOS diet coach',
+    'diabetes lifestyle coach',
+    'home workout coaching',
+  ],
 });
 
 export default function HomePage() {
@@ -23,9 +31,11 @@ export default function HomePage() {
     <>
       <Hero />
       <TrustStrip />
-      <SpecialtiesGrid />
+      <FocusAreas />
+      <ConditionsTreated />
       <ProgramsPreview />
-      <ProcessSteps steps={coachingProcess} />
+      <WorkflowSteps steps={workflowSteps} />
+      <ClientJourney />
       <TransformationsPreview />
       <ResourcesPreview />
       <FaqSection items={homeFaqs} testId="home-faq" />

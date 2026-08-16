@@ -2,13 +2,9 @@ import Image from 'next/image';
 
 import { ButtonLink } from '@/components/ui/button';
 import { Container } from '@/components/ui/container';
-import { credentials, siteConfig, trustPromises } from '@/lib/data';
-
-const heroMetrics = [
-  { label: '1:1 coaching', detail: 'Every plan written by Samrat, never templated' },
-  { label: 'Weekly reviews', detail: 'Written feedback on your data within 24 hours' },
-  { label: 'Habit-first', detail: 'Two habits at a time, so they actually stick' },
-] as const;
+import { getIcon } from '@/components/ui/icon-registry';
+import { coachProfile, heroContent, trustPromises } from '@/lib/data';
+import { resolveImageUrl } from '@/lib/placeholders';
 
 export const Hero = () => (
   <section className="relative overflow-hidden" data-testid="home-hero">
@@ -32,30 +28,41 @@ export const Hero = () => (
             className="mt-6 text-display-xl font-semibold text-slateink text-balance"
             data-testid="home-hero-title"
           >
-            Transform your health with evidence-based nutrition &amp; fitness coaching
+            {heroContent.headline}
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-slateink-muted text-pretty sm:text-lg">
-            Sustainable fat loss, muscle building and PCOS or diabetes management — built around the food
-            already cooked in your kitchen. No crash diets. No gym dependency. No supplement selling.
+            {heroContent.subheadline}
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <ButtonLink data-testid="home-hero-primary-cta" href="/contact" size="lg">
-              Book Free Consultation
+              {heroContent.primaryCtaLabel}
             </ButtonLink>
             <ButtonLink data-testid="home-hero-secondary-cta" href="/programs" size="lg" variant="secondary">
-              View Programs
+              {heroContent.secondaryCtaLabel}
             </ButtonLink>
           </div>
 
           <dl className="mt-12 grid gap-4 sm:grid-cols-3" data-testid="home-hero-metrics">
-            {heroMetrics.map((metric) => (
-              <div className="rounded-2xl border border-hairline bg-surface p-4 shadow-card" key={metric.label}>
-                <dt className="text-sm font-semibold text-slateink">{metric.label}</dt>
-                <dd className="mt-1.5 text-xs leading-relaxed text-slateink-soft">{metric.detail}</dd>
-              </div>
-            ))}
+            {heroContent.metrics.map((metric) => {
+              const Icon = getIcon(metric.icon);
+
+              return (
+                <div
+                  className="rounded-2xl border border-hairline bg-surface p-4 shadow-card"
+                  data-testid={`hero-metric-${metric.id}`}
+                  key={metric.id}
+                >
+                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent-soft text-accent">
+                    <Icon aria-hidden="true" className="h-4 w-4" />
+                  </span>
+                  <dt className="mt-3 text-lg font-semibold tracking-tight text-slateink">{metric.value}</dt>
+                  <dd className="mt-0.5 text-sm font-medium text-slateink">{metric.label}</dd>
+                  <dd className="mt-1.5 text-xs leading-relaxed text-slateink-soft">{metric.detail}</dd>
+                </div>
+              );
+            })}
           </dl>
         </div>
 
@@ -63,23 +70,25 @@ export const Hero = () => (
           <figure className="relative overflow-hidden rounded-3xl border border-hairline bg-surface p-3 shadow-card">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-surface-muted">
               <Image
-                alt={`${siteConfig.coachName}, nutrition and strength coach`}
+                alt={coachProfile.portraitAlt}
                 className="object-cover"
                 fill
                 priority
                 sizes="(min-width: 1024px) 40vw, 100vw"
-                src="https://images.unsplash.com/photo-1595886509089-b691b210fc5c?crop=entropy&cs=srgb&fm=jpg&q=85&w=1000"
+                src={resolveImageUrl(coachProfile.portraitUrl)}
               />
             </div>
             <figcaption className="px-3 pb-1 pt-4">
-              <p className="text-sm font-semibold text-slateink">{siteConfig.coachName}</p>
+              <p className="text-sm font-semibold text-slateink">Coach {coachProfile.name}</p>
+              <p className="mt-0.5 text-xs text-slateink-soft">{coachProfile.role}</p>
               <ul className="mt-3 flex flex-wrap gap-2">
-                {credentials.map((credential) => (
+                {coachProfile.qualifications.map((qualification) => (
                   <li
                     className="rounded-full bg-accent-soft px-2.5 py-1 text-[11px] font-semibold text-slateink"
-                    key={credential.abbreviation}
+                    key={qualification.abbreviation}
+                    title={qualification.title}
                   >
-                    {credential.abbreviation}
+                    {qualification.abbreviation}
                   </li>
                 ))}
               </ul>
@@ -87,7 +96,7 @@ export const Hero = () => (
           </figure>
 
           <ul className="mt-4 grid grid-cols-2 gap-2" data-testid="home-hero-promises">
-            {trustPromises.slice(0, 4).map((promise) => (
+            {trustPromises.map((promise) => (
               <li
                 className="rounded-xl border border-hairline bg-surface px-3 py-2.5 text-xs font-medium text-slateink-muted"
                 key={promise}

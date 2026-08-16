@@ -48,8 +48,11 @@ async function testPrismaCrud(): Promise<void> {
         fullName: 'Core Tester',
         email: 'core@homework.fit',
         phone: '+919999999999',
+        age: 30,
+        gender: 'PREFER_NOT_TO_SAY',
         goal: 'FAT_LOSS',
-        notes: 'core lead',
+        healthIssue: 'None',
+        profession: 'Automated test',
       },
     });
     const leadRead = await prisma.lead.findUnique({ where: { id: lead.id } });
@@ -105,14 +108,18 @@ async function testPages(baseUrl: string, label: string): Promise<void> {
 
 async function testLeadRouteHandler(baseUrl: string, label: string): Promise<void> {
   try {
-    const valid = await fetch(`${baseUrl}/api/lead`, {
+    const valid: Response = await fetch(`${baseUrl}/api/lead`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         fullName: 'Route Handler Probe',
         email: `probe-${Date.now()}@homework.fit`,
         phone: '+919812345678',
-        goal: 'LIFESTYLE_COACHING',
+        age: 34,
+        gender: 'MALE',
+        goal: 'LIFESTYLE_MODIFICATION',
+        healthIssue: 'None',
+        profession: 'Automated test',
         consent: true,
       }),
     });
@@ -121,7 +128,7 @@ async function testLeadRouteHandler(baseUrl: string, label: string): Promise<voi
     const invalid = await fetch(`${baseUrl}/api/lead`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'X', email: 'bad', phone: '1', goal: 'NOPE' }),
+      body: JSON.stringify({ fullName: 'X', email: 'bad', phone: '1', age: 4, gender: 'Z', goal: 'NOPE' }),
     });
 
     if (validBody.id) {
