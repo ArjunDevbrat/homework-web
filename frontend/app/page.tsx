@@ -1,15 +1,14 @@
-import { CtaBand } from '@/components/layout/cta-band';
-import { ClientJourney } from '@/components/home/client-journey';
-import { ConditionsTreated } from '@/components/home/conditions-treated';
+import { ConditionsGrid } from '@/components/home/conditions-grid';
 import { FaqSection } from '@/components/home/faq-section';
-import { FocusAreas } from '@/components/home/focus-areas';
 import { Hero } from '@/components/home/hero';
+import { HowItWorks } from '@/components/home/how-it-works';
+import { MeetCoach } from '@/components/home/meet-coach';
 import { ProgramsPreview } from '@/components/home/programs-preview';
 import { ResourcesPreview } from '@/components/home/resources-preview';
 import { TransformationsPreview } from '@/components/home/transformations-preview';
-import { TrustStrip } from '@/components/home/trust-strip';
-import { WorkflowSteps } from '@/components/programs/workflow-steps';
-import { homeFaqs, workflowSteps } from '@/lib/data';
+import { TrustMetrics } from '@/components/home/trust-metrics';
+import { CtaBand } from '@/components/layout/cta-band';
+import { homeFaqs } from '@/lib/data';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata = buildPageMetadata({
@@ -30,12 +29,12 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustStrip />
-      <FocusAreas />
-      <ConditionsTreated />
+      <TrustMetrics />
+      <ConditionsGrid />
+      <HowItWorks />
+      <MeetCoach />
+      {/* Lower-half sections retained as-is for Phase 3B */}
       <ProgramsPreview />
-      <WorkflowSteps steps={workflowSteps} />
-      <ClientJourney />
       <TransformationsPreview />
       <ResourcesPreview />
       <FaqSection items={homeFaqs} testId="home-faq" />
