@@ -183,6 +183,16 @@ export type ClientJourneyStep = {
 };
 
 /* ------------------------------------------------------------------ */
+/* Why choose us                                                       */
+/* ------------------------------------------------------------------ */
+
+export type WhyChooseUsFeature = {
+  readonly title: string;
+  readonly description: string;
+  readonly icon: IconName;
+};
+
+/* ------------------------------------------------------------------ */
 /* FAQs, resources, testimonials                                       */
 /* ------------------------------------------------------------------ */
 

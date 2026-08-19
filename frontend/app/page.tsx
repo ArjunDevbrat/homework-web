@@ -1,14 +1,16 @@
+import { ClientJourneyTimeline } from '@/components/home/client-journey-timeline';
 import { ConditionsGrid } from '@/components/home/conditions-grid';
-import { FaqSection } from '@/components/home/faq-section';
+import { ConsultationForm } from '@/components/home/consultation-form';
+import { FAQ } from '@/components/home/faq';
+import { FloatingWhatsApp } from '@/components/home/floating-whatsapp';
 import { Hero } from '@/components/home/hero';
 import { HowItWorks } from '@/components/home/how-it-works';
 import { MeetCoach } from '@/components/home/meet-coach';
-import { ProgramsPreview } from '@/components/home/programs-preview';
-import { ResourcesPreview } from '@/components/home/resources-preview';
-import { TransformationsPreview } from '@/components/home/transformations-preview';
+import { Programs } from '@/components/home/programs';
+import { Testimonials } from '@/components/home/testimonials';
 import { TrustMetrics } from '@/components/home/trust-metrics';
+import { WhyChooseUs } from '@/components/home/why-choose-us';
 import { CtaBand } from '@/components/layout/cta-band';
-import { homeFaqs } from '@/lib/data';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata = buildPageMetadata({
@@ -33,12 +35,14 @@ export default function HomePage() {
       <ConditionsGrid />
       <HowItWorks />
       <MeetCoach />
-      {/* Lower-half sections retained as-is for Phase 3B */}
-      <ProgramsPreview />
-      <TransformationsPreview />
-      <ResourcesPreview />
-      <FaqSection items={homeFaqs} testId="home-faq" />
+      <WhyChooseUs />
+      <Programs />
+      <ClientJourneyTimeline />
+      <Testimonials />
+      <ConsultationForm />
+      <FAQ />
       <CtaBand />
+      <FloatingWhatsApp />
     </>
   );
 }

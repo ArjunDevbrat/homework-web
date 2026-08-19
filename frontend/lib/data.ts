@@ -10,6 +10,7 @@ import type {
   SelectOption,
   SiteConfig,
   TestimonialItem,
+  WhyChooseUsFeature,
   WorkflowStep,
 } from '@/types';
 import { FALLBACK_PORTRAIT_IMAGE, FALLBACK_TESTIMONIAL_IMAGE } from '@/lib/placeholders';
@@ -314,6 +315,67 @@ export const trustPromises: readonly string[] = [
   'No gym dependency required',
   'Food you already eat at home',
   'Daily live classes with the coach',
+];
+
+/* ------------------------------------------------------------------ */
+/* Why choose HOMEWORK (9 feature cards)                               */
+/* ------------------------------------------------------------------ */
+
+export const whyChooseUsFeatures: readonly WhyChooseUsFeature[] = [
+  {
+    title: 'Evidence-based, always',
+    description:
+      'Every recommendation traces back to nutrition science and your own weekly data — never trends, detoxes or fear.',
+    icon: 'flask-conical',
+  },
+  {
+    title: 'No crash diets, ever',
+    description:
+      'Sustainable calorie strategies built on real food, so the results you get are results you actually keep.',
+    icon: 'salad',
+  },
+  {
+    title: '24x7 WhatsApp support',
+    description:
+      'Direct access to the coaching desk on WhatsApp, so your questions get answered while motivation is still high.',
+    icon: 'message-circle',
+  },
+  {
+    title: 'Daily live classes',
+    description:
+      'Train on camera with Coach Samrat each morning, with real-time form correction and scaled variations.',
+    icon: 'video',
+  },
+  {
+    title: 'Food you already cook',
+    description:
+      'Roti, rice, dal and sabzi stay on the menu — we adjust portions and structure, not your food culture.',
+    icon: 'utensils',
+  },
+  {
+    title: 'Home first, gym optional',
+    description:
+      'Everything is designed for a living-room floor, a pair of dumbbells and a single resistance band.',
+    icon: 'dumbbell',
+  },
+  {
+    title: 'Weekly personalised plans',
+    description:
+      'A fresh plan every week, rebuilt from your check-in data instead of a fixed chart you outgrow in days.',
+    icon: 'notebook-pen',
+  },
+  {
+    title: 'Condition-specific care',
+    description:
+      'Focused protocols for PCOS, thyroid, diabetes and more — coordinated alongside your treating doctor.',
+    icon: 'heart-pulse',
+  },
+  {
+    title: 'Habits that outlive coaching',
+    description:
+      'The goal is that you can run your own nutrition and training after coaching ends. That is the homework.',
+    icon: 'target',
+  },
 ];
 
 /* ------------------------------------------------------------------ */
