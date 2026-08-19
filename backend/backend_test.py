@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 
 class HomeworkAPITester:
-    def __init__(self, base_url="https://fullstack-coach-app.preview.emergentagent.com"):
+    def __init__(self, base_url="https://hw-assessment.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
