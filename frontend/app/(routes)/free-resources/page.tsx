@@ -1,6 +1,6 @@
 import { CtaBand } from '@/components/layout/cta-band';
 import { PageHero } from '@/components/layout/page-hero';
-import { ResourcesGrid } from '@/components/resources/resources-grid';
+import { ResourcesDownloadHub } from '@/components/resources/resources-download-hub';
 import { buildPageMetadata } from '@/lib/metadata';
 
 export const metadata = buildPageMetadata({
@@ -20,12 +20,12 @@ export default function FreeResourcesPage() {
   return (
     <>
       <PageHero
-        description="No email gate, no upsell, no download funnel. These are the same eight frameworks paying clients receive in week one — published openly because most people only need a starting point."
+        description="Preview all eight guides below, then have any of them emailed straight to your inbox — one click, no long form. These are the same frameworks paying clients receive in week one."
         eyebrow="Free resources"
         testId="resources-hero"
         title="Eight guides you can start tonight"
       />
-      <ResourcesGrid />
+      <ResourcesDownloadHub />
       <CtaBand
         body="If you have used these for a few weeks and want the version tailored to your body, schedule and reports, that is what coaching is for."
         testId="resources-cta-band"

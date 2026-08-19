@@ -1,5 +1,5 @@
 import { createContactSubmission, createLead } from '@/lib/repositories/lead-repository';
-import { sendNotificationEmail } from '@/lib/services/email-service';
+import { sendConfirmationEmail, sendNotificationEmail } from '@/lib/services/email-service';
 import { genderLabel, generateWhatsAppLink, goalLabel, programLabel } from '@/lib/utils';
 import type { ConsultationInput, ContactInput } from '@/lib/validations';
 import type { ConsultationFormData } from '@/types';
@@ -36,6 +36,11 @@ export async function submitConsultation(
       { label: 'Source', value: lead.source },
     ],
   });
+
+  // Best-effort user confirmation email (env-gated; no-ops without Resend credentials).
+  if (lead.email) {
+    await sendConfirmationEmail({ to: lead.email, name: lead.fullName });
+  }
 
   return {
     id: lead.id,

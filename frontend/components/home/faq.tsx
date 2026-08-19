@@ -3,8 +3,22 @@ import { Section } from '@/components/layout/section';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { faqs } from '@/lib/data';
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
+
 export const FAQ = () => (
   <Section testId="home-faq">
+    <script
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      type="application/ld+json"
+    />
     <SectionHeading
       align="center"
       eyebrow="Questions & answers"

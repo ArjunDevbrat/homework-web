@@ -1,5 +1,8 @@
 'use server';
 
+import { headers } from 'next/headers';
+
+import { checkRateLimit } from '@/lib/rate-limit';
 import { submitContactMessage, submitConsultation } from '@/lib/services/lead-service';
 import { consultationSchema, contactSchema, toFieldErrors } from '@/lib/validations';
 import type { ActionState } from '@/types';
@@ -18,6 +21,16 @@ export type ConsultationFieldKey =
 
 export type ContactFieldKey = 'fullName' | 'email' | 'subject' | 'message';
 
+/** Resolves the caller's IP from proxy headers so rate limiting can key on it. */
+async function getClientIp(): Promise<string> {
+  const headerList = await headers();
+  const forwarded = headerList.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0]?.trim() || 'unknown';
+  }
+  return headerList.get('x-real-ip') ?? 'unknown';
+}
+
 /**
  * Server Action backing the consultation form on /contact.
  * Validation is re-run on the server so client-side Zod can never be bypassed.
@@ -25,6 +38,16 @@ export type ContactFieldKey = 'fullName' | 'email' | 'subject' | 'message';
 export async function submitConsultationAction(
   values: unknown,
 ): Promise<ActionState<ConsultationFieldKey>> {
+  const rate = checkRateLimit(`consultation:${await getClientIp()}`);
+  if (!rate.allowed) {
+    return {
+      status: 'error',
+      message: `You've submitted a few times already. Please try again in about ${Math.ceil(
+        rate.retryAfterSeconds / 60,
+      )} minute(s).`,
+    };
+  }
+
   const parsed = consultationSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -54,6 +77,16 @@ export async function submitConsultationAction(
 
 /** Server Action backing the general enquiry form on /contact. */
 export async function submitContactAction(values: unknown): Promise<ActionState<ContactFieldKey>> {
+  const rate = checkRateLimit(`contact:${await getClientIp()}`);
+  if (!rate.allowed) {
+    return {
+      status: 'error',
+      message: `You've submitted a few times already. Please try again in about ${Math.ceil(
+        rate.retryAfterSeconds / 60,
+      )} minute(s).`,
+    };
+  }
+
   const parsed = contactSchema.safeParse(values);
 
   if (!parsed.success) {

@@ -4,7 +4,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { siteConfig } from '@/lib/data';
-import { absoluteUrl } from '@/lib/utils';
+import { absoluteUrl, FALLBACK_PORTRAIT_IMAGE } from '@/lib/utils';
 
 import './globals.css';
 
@@ -46,11 +46,13 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     url: absoluteUrl('/'),
     locale: 'en_IN',
+    images: [{ url: FALLBACK_PORTRAIT_IMAGE, alt: `${siteConfig.name} — ${siteConfig.coachName}` }],
   },
   twitter: {
     card: 'summary_large_image',
     title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [FALLBACK_PORTRAIT_IMAGE],
   },
   robots: { index: true, follow: true },
   category: 'health',

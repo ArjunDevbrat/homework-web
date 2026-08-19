@@ -1,6 +1,7 @@
 import { CtaBand } from '@/components/layout/cta-band';
 import { PageHero } from '@/components/layout/page-hero';
 import { FaqSection } from '@/components/home/faq-section';
+import { ProgramFees } from '@/components/programs/program-fees';
 import { ProgramsGrid } from '@/components/programs/programs-grid';
 import { WhatsIncluded } from '@/components/programs/whats-included';
 import { WorkflowSteps } from '@/components/programs/workflow-steps';
@@ -30,6 +31,7 @@ export default function ProgramsPage() {
         title="Coaching built around your week, not an ideal one"
       />
       <ProgramsGrid />
+      <ProgramFees />
       <WhatsIncluded />
       <WorkflowSteps steps={workflowSteps} testId="programs-workflow" />
       <FaqSection
