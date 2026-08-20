@@ -101,3 +101,109 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  HOMEWORK platform (Coach Samrat Aryan) — Next.js 15 + Prisma/Postgres health-coaching site.
+  Phases 3A/3B/4 delivered: full homepage (hero, trust metrics, conditions grid, how-it-works,
+  meet-coach, why-choose-us, programs, client-journey timeline, testimonials tabs, consultation
+  form, FAQ, floating WhatsApp), secondary-page enhancements (/programs fee drawers,
+  /free-resources 1-click lead modal), rate limiting, SEO, and env-gated Resend email.
+  FINAL QA gate: verify all routes, forms, interactive components, responsiveness (mobile/tablet/
+  desktop), zero console/hydration/accessibility errors. Ready for Vercel deploy.
+
+frontend:
+  - task: "Homepage full render + interactions (hero video modal, dual CTAs, testimonials tabs, client-journey timeline, program details modal, floating WhatsApp)"
+    implemented: true
+    working: "NA"
+    file: "app/page.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: "NA"
+        -agent: "main"
+        -comment: "Phases 3A/3B built and self-verified visually. Needs formal E2E: hero 'Watch How We Work' modal opens/closes; testimonials Written/Video tabs switch; client-journey timeline nodes update the detail card on click; program 'View details' modal opens; floating WhatsApp visible fixed bottom-right."
+
+  - task: "Consultation form (live Server Action -> Postgres) with validation + WhatsApp handoff + rate-limit error state"
+    implemented: true
+    working: "NA"
+    file: "components/home/consultation-form.tsx, lib/actions.ts, lib/rate-limit.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: "NA"
+        -agent: "main"
+        -comment: "Self-verified one happy-path submission persisted to Postgres and returned success + WhatsApp link. Needs E2E: required-field validation errors render; successful submit shows success + 'Continue on WhatsApp'; verify graceful error state. NOTE: rate limit is 5 submits / 10 min per IP — avoid exceeding during test or expect a friendly 'try again' message (that is expected behaviour, not a bug)."
+
+  - task: "/programs fee-structure drawers"
+    implemented: true
+    working: "NA"
+    file: "components/programs/program-fees.tsx, components/programs/program-fee-drawer.tsx, app/(routes)/programs/page.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        -working: "NA"
+        -agent: "main"
+        -comment: "Self-verified drawer opens from 'See fees & details'. Needs E2E across all 3 programs: drawer opens, shows fee label + inclusions, closes; 'Book a free consultation' links to /contact."
+
+  - task: "/free-resources 1-click lead-capture modal (persists as ContactSubmission)"
+    implemented: true
+    working: "NA"
+    file: "components/resources/resources-download-hub.tsx, app/(routes)/free-resources/page.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        -working: "NA"
+        -agent: "main"
+        -comment: "Self-verified: clicking 'Get this guide' opens modal, submit shows success and persisted a ContactSubmission. Needs E2E: validation on empty fields, success state, modal close."
+
+  - task: "Secondary pages render + responsiveness + contact form"
+    implemented: true
+    working: "NA"
+    file: "app/(routes)/about-coach, programs, transformations, contact, privacy-policy, terms, refund-policy"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: "NA"
+        -agent: "main"
+        -comment: "All routes return 200 and production build passes. Needs E2E: every route renders without console/hydration errors; header + mobile nav work; responsive at 390px (mobile), 768px (tablet), 1440px (desktop); contact form submits."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Homepage full render + interactions (hero video modal, dual CTAs, testimonials tabs, client-journey timeline, program details modal, floating WhatsApp)"
+    - "Consultation form (live Server Action -> Postgres) with validation + WhatsApp handoff + rate-limit error state"
+    - "Secondary pages render + responsiveness + contact form"
+    - "/programs fee-structure drawers"
+    - "/free-resources 1-click lead-capture modal (persists as ContactSubmission)"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+    -agent: "main"
+    -message: |
+      Final QA gate for HOMEWORK. ESLint 0 warnings, tsc 0 errors, `yarn build` passes (14/14 pages).
+      Please run full frontend E2E on the preview URL. Focus:
+      1) All routes (/, /about-coach, /programs, /free-resources, /transformations, /contact,
+         /privacy-policy, /terms, /refund-policy) render with ZERO console errors, ZERO hydration
+         mismatches, and no obvious a11y issues.
+      2) Responsiveness at 390px (mobile), 768px (tablet), 1440px (desktop) — header/mobile nav,
+         grids reflow, no overflow.
+      3) Interactions: hero 'Watch How We Work' video modal; testimonials Written/Video tabs;
+         client-journey timeline node clicks; /programs fee drawers (all 3); /free-resources
+         'Get this guide' modal.
+      4) Forms: homepage consultation form (valid submit -> success + WhatsApp link; empty submit ->
+         validation errors) and /contact form. IMPORTANT: rate limit is 5 submits / 10 min per IP —
+         a friendly 'try again' message after several rapid submits is EXPECTED, not a bug.
+      App is a Next.js app; all API logic is in Server Actions + /api route handlers (no separate
+      backend). No auth. Use the public preview URL.
